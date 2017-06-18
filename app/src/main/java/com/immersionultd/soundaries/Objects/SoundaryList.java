@@ -46,9 +46,11 @@ public class SoundaryList implements Serializable {
             return false;
         }
         geofenceManager.addGeofenceToListeningService(context, soundary);
-        storedData.saveData(context, dataFileName);
+
+        boolean temp = soundaries.add(soundary);
         soundaryNames.add(soundary.getName());
-        return soundaries.add(soundary);
+        storedData.saveData(context, dataFileName);
+        return temp;
     }
 
     public void remove(Soundary soundary){
@@ -60,9 +62,10 @@ public class SoundaryList implements Serializable {
 
     public Soundary remove(int i) {
         geofenceManager.removeGeofenceFromListeningService(context, soundaries.get(i).getGeofence().getRequestId());
-        storedData.saveData(context, dataFileName);
+        Soundary temp = soundaries.remove(i);
         soundaryNames.remove(i);
-        return soundaries.remove(i);
+        storedData.saveData(context, dataFileName);
+        return temp;
     }
 
     public boolean editSoundary(Context context, Soundary soundary, String newName, int volume, int radius){

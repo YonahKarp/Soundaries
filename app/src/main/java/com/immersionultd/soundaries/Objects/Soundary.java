@@ -38,6 +38,9 @@ public class Soundary implements Serializable {
     private int radius;
     private int volume;
 
+    public Soundary(){}
+
+
     public Soundary(MarkerOptions markerOptions){
         name = markerOptions.getTitle();
         this.markerOptions = markerOptions;

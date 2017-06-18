@@ -47,7 +47,7 @@
         <service android:name=".Services.GeofenceTransitionsIntentService" />
 
         <activity
-            android:name=".Activities.MainMapsActivity"
+            android:name=".Activities.MainMapsActivity.MainMapsActivity"
             android:label="@string/title_activity_drawer"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
