@@ -7,4 +7,61 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+
+    <string name="battery_hint">
+        Soundaries requires the user\'s location to be retrieved in order to function. \n
+        If performed too often, this can be a drain on your battery. \n
+        Note, battery usage and location accuracy are related. \n
+        Choose a balance that works for you by altering options below
+    </string>
+    <string name="min_dist"><b>Minimum distance traveled before update</b></string>
+    <string name="only_geocation">
+        When The above switch is on, location is not actively updated by Soundaries.\nInstead, location is retrieved only when google play services or other location apps deem it necessary
+    </string>
+
+
+    <string name="helpTitle"><u>Help</u></string>
+    <string name="helpWelcome">Welcome to Soundaries! Lets help you get started.</string>
+    <string name="helpAbout">Soundaries is a location-based ringer manager</string>
+    <string name="helpAbout2">
+        With Soundaries, you can choose a location and set that location\'s ringer volume.
+        Any time you enter the area, your ringer will automatically adjust to the value you set.
+        Don\'t worry, once  you leave the area, your volume will set right back to where it was.
+    </string>
+
+    <string name="helpTitle1"><u>Adding your first Soundary</u></string>
+    <string name="help1sub">There are 2 ways to begin adding a new Soundary</string>
+    <string name="help1_1">1) Using the search bar</string>
+    <string name="help1_2">l) Type the address or the name of the location into the search bar</string>
+    <string name="help1_3">ll) Choose the result you\'re looking for</string>
+    <string name="help1_4">2) Long Press</string>
+    <string name="help1_5">Simply press and hold the location on the map</string>
+    <string name="help1_6">
+        A pin should be placed on your chosen location.
+        Now set, the desired ringer volume and radius on the sliders below.
+        We recommend a radius of at least 150 meters for greater location accuracy.
+        Just hit the check button and you\'re done! You\'ve added your first Soundary.
+        You can test it out if you\'d like by entering and exiting the set area.
+    </string>
+
+
+    <string name="helpTitle2"><u>Editing your Soundaries</u></string>
+    <string name="help2sub">There are two ways to begin editing you soundaries</string>
+    <string name="help2_1">1) Select your Soundary from the side drawer</string>
+    <string name="help2_2">l) Tap the = icon on the top left of the screen (or slide out from the left edge)</string>
+    <string name="help2_3">ll) Select your Soundary form the list</string>
+    <string name="help2_4">2) Tap your Soundary\'s marker on the map</string>
+    <string name="help2_5">Your Soundary should center on the screen and it\'s information should slide up from the bottom.</string>
+
+    <string name="help2_6">- Move the sliders to your desired settings</string>
+    <string name="help2_7">- You can also begin editing the locations\'s name by tapping on it</string>
+    <string name="help2_8">- Don\'t forget to hit the check button when you\'re done</string>
+    <string name="help2_9">- To cancel your charges, dismiss the information view by dragging it to the bottom of the screen</string>
+    <string name="help2_10">- To delete, tap the trash can icon</string>
+
+
+    <string name="helpLuck">Good Luck and enjoy the app!</string>
+
 </resources>

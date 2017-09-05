@@ -2,9 +2,14 @@ package com.immersionultd.soundaries.Activities.MainMapsActivity;
 
 import android.Manifest;
 
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,6 +43,7 @@ import com.google.android.gms.common.ConnectionResult;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -53,47 +59,47 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.immersionultd.soundaries.Activities.SettingsActivity;
 import com.immersionultd.soundaries.R;
+import com.immersionultd.soundaries.Services.LocationUpdateService;
 import com.immersionultd.soundaries.Services.StoredData;
 import com.immersionultd.soundaries.Objects.Soundary;
+import com.immersionultd.soundaries.util.IabHelper;
+import com.immersionultd.soundaries.util.IabResult;
 
-public class MainMapsActivity extends AppCompatActivity
+public class MainMapsActivity extends BottomSheetActivity
         implements
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
     private static final String TAG = MainMapsActivity.class.getSimpleName();
-
-
-
     private GoogleApiClient mGoogleApiClient;
-    protected StoredData storedData;
-    protected Soundary tempSoundary;
-
-    protected BottomSheet bottomSheet;
-    protected NavDrawer navDrawer;
-    protected SoundaryMap map;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_maps);
 
+
+
+
         buildGoogleApiClient();
         storedData = new StoredData(this, mGoogleApiClient);
+        soundaries = storedData.soundaries;
 
         setUpPieces();
-        createLocationRequest(); //todo fix this
     }
 
-    private void setUpPieces(){
+    private void setUpPieces() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        map = new SoundaryMap(this);
-        bottomSheet = new BottomSheet(this);
-        navDrawer = new NavDrawer(this);
+        setUpNavs();
+        setUpMap();
+
+        setUpInAppBilling();
+        setUpBottomSheet();
 
         setUpAutoCompleteFragment();
         setUpUILocationButton();
@@ -112,17 +118,20 @@ public class MainMapsActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         //todo ask about
-        if (mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected())
-            mGoogleApiClient.disconnect();
+        //if (mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected())
+        //  mGoogleApiClient.disconnect();
     }
-    
+
+    //googleApIClient connection methods
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Toast.makeText(this, "connection to Google Places failed, auto complete not available", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {}
+    public void onConnected(@Nullable Bundle bundle) {
+        createLocationRequest(); //todo fix this
+    }
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -136,8 +145,7 @@ public class MainMapsActivity extends AppCompatActivity
 
     //set up methods
     //-----
-
-    private void setUpAutoCompleteFragment(){
+    private void setUpAutoCompleteFragment() {
         final PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         autocompleteFragment.getView().findViewById(R.id.place_autocomplete_search_input).setVisibility(View.GONE);
@@ -147,8 +155,8 @@ public class MainMapsActivity extends AppCompatActivity
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                map.handleNonRegisteredSoundary();
-                map.addSoundaryToMap(place.getName() + "", place.getLatLng());
+                handleNonRegisteredSoundary();
+                addSoundaryToMap(place.getName() + "", place.getLatLng());
             }
 
             @Override
@@ -171,21 +179,13 @@ public class MainMapsActivity extends AppCompatActivity
                 .build();
     }
 
+
+
     //map methods
     //----------
 
     protected void createLocationRequest() {
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(30000);
-        mLocationRequest.setFastestInterval(10000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        mLocationRequest.setSmallestDisplacement(10f);
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest);
-
-        builder.setAlwaysShow(true);
-
+        startService(new Intent(this, LocationUpdateService.class));
     }
 
     private void setUpUILocationButton() {
@@ -197,12 +197,11 @@ public class MainMapsActivity extends AppCompatActivity
                 if (ActivityCompat.checkSelfPermission(MainMapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(MainMapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                     return;
-
                 Location location = LocationServices.FusedLocationApi
                         .getLastLocation(mGoogleApiClient);
 
                 if (location != null)
-                    map.map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(location.getLatitude(),
                                     location.getLongitude()), 14f));
                 else
@@ -211,5 +210,9 @@ public class MainMapsActivity extends AppCompatActivity
         });
     }
 
-    //todo address same-name bug (where )
+    @Override
+    public void onLocationChanged(Location location) {
+        Toast.makeText(this, "testing message, at location " + location, Toast.LENGTH_SHORT).show();
+    }
+
 }

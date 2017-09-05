@@ -26,9 +26,14 @@ public class GeofenceTransitionsIntentService extends IntentService {
             return;
         }
 
-        int volume = intent.getIntExtra("volume", 0);
+
+
 
         int geofenceTransition = event.getGeofenceTransition();
+
+        StoredData storedData = new StoredData(getApplicationContext());
+        String geofenceName = event.getTriggeringGeofences().get(0).getRequestId();
+        int volume = storedData.soundaries.get(geofenceName).getVolume();
 
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 

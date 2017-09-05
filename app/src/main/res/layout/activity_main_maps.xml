@@ -6,12 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    tools:openDrawer="start"
+    android:focusable="true">
 
     <include
         layout="@layout/app_bar_main_maps"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
@@ -19,12 +22,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:background="@color/colorPrimary"
+        app:headerLayout="@layout/nav_header_drawer"
         app:menu="@menu/activity_drawer_main" >
-
-        <include
-            layout="@layout/nav_header_drawer"
-            android:layout_width="match_parent"
-            android:layout_height="260dp" />
 
 
 

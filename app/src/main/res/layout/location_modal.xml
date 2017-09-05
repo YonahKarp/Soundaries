@@ -38,6 +38,10 @@
                 android:layout_marginEnd="16dp"
                 android:id="@+id/titleEditText"
                 android:hint="location Name"
+                android:imeOptions="actionDone"
+                android:imeActionLabel="Done"
+                android:singleLine="true"
+                android:maxLines="1"
                  />
 
 

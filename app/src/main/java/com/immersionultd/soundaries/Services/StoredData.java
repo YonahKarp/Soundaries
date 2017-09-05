@@ -7,7 +7,9 @@ import com.immersionultd.soundaries.Objects.Soundary;
 import com.immersionultd.soundaries.Objects.SoundaryList;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -22,7 +24,14 @@ import java.util.List;
 public class StoredData implements Serializable {
     //private ArrayList<Soundary> soundaries = null;
     public SoundaryList soundaries = null;
-    private GoogleApiClient googleApiClient;
+    public int previousVolume = 5;
+    public static int updateTimeMilliseconds = 60 * 1000;
+    public static int updateRadiusMeters = 5;
+    public static boolean shouldUseLocationPolling = false;
+
+    public int maxSoundaries = 3;
+
+    private transient GoogleApiClient googleApiClient;
 
     private final String dataFileName = "savedData";
 
@@ -33,12 +42,15 @@ public class StoredData implements Serializable {
         loadData(context);
     }
 
+    public StoredData(Context context){
+        loadJustSoundaries(context);
+    }
+
     private boolean loadData(Context context) {
         if (soundaries == null)
             return loadData(context, dataFileName);
         return true;
     }
-
 
     public boolean saveData(Context context, String fileName){
         try {
@@ -46,6 +58,12 @@ public class StoredData implements Serializable {
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
 
             out.writeObject(soundaries);
+            out.writeInt(previousVolume);
+            out.writeInt(updateTimeMilliseconds);
+            out.writeInt(updateRadiusMeters);
+            out.writeBoolean(shouldUseLocationPolling);
+            out.writeInt(maxSoundaries);
+
             out.close();
             fileOut.close();
             return true; //success
@@ -61,6 +79,12 @@ public class StoredData implements Serializable {
             soundaries = (SoundaryList) in.readObject();
             soundaries.setTransientData(context, googleApiClient, this);
 
+            previousVolume = in.readInt();
+            updateTimeMilliseconds = in.readInt();
+            updateRadiusMeters = in.readInt();
+            shouldUseLocationPolling = in.readBoolean();
+            maxSoundaries = in.readInt();
+
             in.close();
             fileIn.close();
 
@@ -69,7 +93,15 @@ public class StoredData implements Serializable {
             soundaries = new SoundaryList(context, googleApiClient, this);
             return false;
         }
+        return true;
+    }
 
+    private boolean loadJustSoundaries(Context context) {
+        try {
+            FileInputStream fileIn = context.openFileInput(dataFileName);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            soundaries = (SoundaryList) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {return false;}
         return true;
     }
 

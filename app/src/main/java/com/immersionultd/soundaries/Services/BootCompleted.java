@@ -17,11 +17,9 @@ public class BootCompleted extends BroadcastReceiver{
         //we double check here for only boot complete event
         if(intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED))
         {
-            LocationRequest mLocationRequest = new LocationRequest();
-            mLocationRequest.setInterval(30000);
-            mLocationRequest.setFastestInterval(10000);
-            mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-            mLocationRequest.setSmallestDisplacement(10f);
+            //todo re-register fences
+            //Intent serviceIntent = new Intent(context, AndroidStartServiceOnBoot.class);
+            //context.startService(serviceIntent);
         }
     }
 }
