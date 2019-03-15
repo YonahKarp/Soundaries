@@ -5,7 +5,7 @@
 # What is Soundaries?
 
 <aside class="warning">
-Work on Soundaries has discontinued as battery drainage has proven to be very difficult to avoid 
+Work on Soundaries has discontinued as battery drainage has proven to be very difficult to avoid.
 </aside>
 
 Soundaries is an all new location-based ringer manager.
